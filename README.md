@@ -19,3 +19,7 @@ This is a desktop-based restaurant management system developed using Java and Ne
 - Order class
 - MenuItem class
 - OrderItem class
+  
+## Database Setup
+- Import the SQL file into phpMyAdmin or MySQL
+- Update DBConnection.java with your credentials
