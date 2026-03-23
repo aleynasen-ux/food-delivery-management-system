@@ -1,0 +1,118 @@
+package takeaway;
+
+import java.sql.*;
+import java.util.ArrayList;
+
+public class Order {
+
+    private int order_id;
+    private int customer_id;
+    private String order_date;
+
+    public Order(int orderId, int customerId, String date) {
+        this.order_id = orderId;
+        this.customer_id = customerId;
+        this.order_date = date;
+    }
+
+    public int getOrderId() { return order_id; }
+    public int getCustomerId() { return customer_id; }
+    public String getOrderDate() { return order_date; }
+
+    // ADD
+    public static void addOrderDB(int orderId, int customerId, String date) {
+        String sql = "INSERT INTO orders (order_id, customer_id, order_date) VALUES (?, ?, ?)";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ps.setInt(2, customerId);
+            ps.setString(3, date);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // UPDATE
+    public static void updateOrderDB(int orderId, int customerId, String date) {
+        String sql = "UPDATE orders SET customer_id=?, order_date=? WHERE order_id=?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, customerId);
+            ps.setString(2, date);
+            ps.setInt(3, orderId);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // DELETE
+    public static void deleteOrderDB(int orderId) {
+        String sql = "DELETE FROM orders WHERE order_id=?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // GET BY ID
+    public static Order getOrderByIdDB(int orderId) {
+        Order o = null;
+        String sql = "SELECT * FROM orders WHERE order_id=?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                o = new Order(
+                        rs.getInt("order_id"),
+                        rs.getInt("customer_id"),
+                        rs.getString("order_date")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return o;
+    }
+
+    // GET ALL
+    public static ArrayList<Order> getAllOrdersDB() {
+        ArrayList<Order> list = new ArrayList<>();
+        String sql = "SELECT * FROM orders";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(new Order(
+                        rs.getInt("order_id"),
+                        rs.getInt("customer_id"),
+                        rs.getString("order_date")
+                ));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+}
